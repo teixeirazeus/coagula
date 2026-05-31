@@ -1,0 +1,12 @@
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "8ddabcd5441604b137b5b2b50a3cc908e3ac3827",
+  "prompts": {},
+  "humans": {
+    "h_0cfb1473e5b407": {
+      "author": "Thiago da Silva Teixeira <teixeira.zeus@gmail.com>"
+    }
+  }
+}
