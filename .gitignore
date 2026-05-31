@@ -1,0 +1,54 @@
+# specstory
+.specstory/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.egg-info/
+dist/
+build/
+*.egg
+*.whl
+
+# --- Virtual environment ---
+.venv/
+venv/
+env/
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# --- OS ---
+.DS_Store
+Thumbs.db
+
+# --- Python tools ---
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# --- Environment ---
+.env
+!.env.example
+
+# --- Build artifacts ---
+*.so
+*.dylib
+
+# --- Development temp files ---
+check_*.py
+test_coagula_demo*.py
+e2e_test.py
+comprehensive_e2e.py
+debug_*.py
+coagula_*.py
+
+# --- Project specific ---
+.specstory/

@@ -1,0 +1,94 @@
+[build-system]
+requires = ["hatchling >= 1.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "coagula"
+version = "0.1.0"
+description = "Deterministic Speckit pipeline abstraction for AI agent integration"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+authors = [
+    { name = "Coagula Contributors" },
+]
+dependencies = [
+    "pydantic >= 2.0",
+    "phidata >= 2.0",
+]
+
+[project.scripts]
+coagula = "coagula.__main__:main"
+
+[project.optional-dependencies]
+dev = [
+    "mypy >= 1.0",
+    "pytest >= 8.0",
+    "pytest-asyncio >= 0.23",
+    "pytest-mock >= 3.12",
+    "pydantic[mypy] >= 2.0",
+]
+
+[tool.mypy]
+strict = true
+explicit_package_bases = true
+check_untyped_defs = true
+disallow_any_unimported = false
+disallow_any_expr = false
+disallow_any_decorated = false
+disallow_any_explicit = false
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_unreachable = true
+ignore_missing_imports = false
+
+[[tool.mypy.overrides]]
+module = "phi.*"
+ignore_missing_imports = true
+no_implicit_reexport = true
+follow_imports = "skip"
+
+[[tool.mypy.overrides]]
+module = "coagula.tools"
+disallow_any_unimported = false
+disallow_any_expr = false
+disallow_any_explicit = false
+disallow_any_decorated = false
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = "coagula.engine"
+no_implicit_reexport = true
+disallow_any_unimported = false
+disallow_any_expr = false
+disallow_any_explicit = false
+disallow_any_decorated = false
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = "coagula.bridge"
+disallow_any_unimported = false
+disallow_any_expr = false
+disallow_any_explicit = false
+disallow_any_decorated = false
+warn_return_any = false
+
+[[tool.mypy.overrides]]
+module = "coagula.models"
+disallow_any_unimported = false
+disallow_any_expr = false
+disallow_any_explicit = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-v --tb=short"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/coagula"]
