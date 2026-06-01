@@ -23,6 +23,7 @@ from coagula.models import SpeckitResult, ToolCall, SpeckitConfig, BridgeResult
 from coagula.engine import SpeckitEngine
 from coagula.tools import SpeckitToolRegistry, get_speckit_tool_schema
 from coagula.bridge import OrchestratorBridge
+from coagula.presets import register_sdd_presets
 from coagula.exceptions import (
     CoagulaError,
     ValidationError,
@@ -40,6 +41,7 @@ __all__ = [
     "SpeckitToolRegistry",
     "get_speckit_tool_schema",
     "OrchestratorBridge",
+    "register_sdd_presets",
     "CoagulaError",
     "ValidationError",
     "ExecutionError",
