@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "coagula"
-version = "0.1.0"
+version = "0.2.0"
 description = "Deterministic Speckit pipeline abstraction for AI agent integration"
 readme = "README.md"
 license = { text = "MIT" }
