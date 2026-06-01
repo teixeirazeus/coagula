@@ -115,7 +115,7 @@ class OrchestratorBridge:
         name = pipeline_name or tool_call.name
 
         try:
-            _, config = self._registry.get(name)
+            _, config, _ = self._registry.get(name)
         except KeyError:
             return BridgeResult(
                 success=False,
@@ -158,6 +158,59 @@ class OrchestratorBridge:
             )
 
     # -- context formatting helpers -----------------------------------------
+
+    def chain(
+        self,
+        pipeline_names: list[str],
+        data_source: str,
+        business_objective: str,
+    ) -> list[BridgeResult]:
+        """Execute pipelines in sequence, passing results forward.
+
+        Each pipeline's ``details`` dict is merged into the ``data_source``
+        of the next pipeline.  This enables the Spec-Driven Development
+        pattern: specify -> plan -> tasks -> implement.
+
+        Parameters
+        ----------
+        pipeline_names:
+            Ordered list of pipeline names to execute.
+        data_source:
+            Initial input for the first pipeline.
+        business_objective:
+            High-level goal shared across all pipelines.
+
+        Returns
+        -------
+        A list of :class:`BridgeResult` objects, one per pipeline.
+        All pipelines are executed even if one fails (the caller can
+        inspect which step failed).
+        """
+        results: list[BridgeResult] = []
+        current_data = data_source
+
+        for name in pipeline_names:
+            tc = ToolCall(
+                name=name,
+                arguments={
+                    "data_source": current_data,
+                    "business_objective": business_objective,
+                },
+                tool_call_id=f"chain_{name}_{len(results)}",
+            )
+            result = self.handle_tool_call(tc)
+            results.append(result)
+
+            # Pass details forward if available
+            if result.success and result.data and hasattr(result.data, "details"):
+                details = result.data.details
+                if details:
+                    current_data = (
+                        f"{current_data}\n\n--- Previous step ({name}) output ---\n"
+                        f"{details}"
+                    )
+
+        return results
 
     @staticmethod
     def format_as_tool_response(
