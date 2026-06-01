@@ -75,6 +75,15 @@ def _parse_args(args: list[str]) -> dict[str, Any]:
             opts["json_output"] = True
         elif args[i] == "--details":
             opts["show_details"] = True
+        elif args[i] in ("--chain",):
+            opts["chain"] = []
+            i += 1
+            while i < len(args) and not args[i].startswith("--"):
+                opts["chain"].append(args[i])
+                i += 1
+            continue
+        elif args[i] in ("--list-presets",):
+            opts["list_presets"] = True
         i += 1
     return opts
 
@@ -141,6 +150,47 @@ def main() -> None:
         for s in schemas:
             print(f"  - {s['name']}: {s['description'][:60]}...")
         sys.exit(0)
+
+    if opts.get("list_presets"):
+        from coagula.presets import register_sdd_presets
+        # Show available presets without registering
+        print("Available SDD presets (use --chain to run):")
+        print("  constitution  - Project principles and guidelines")
+        print("  specify       - Requirements specification")
+        print("  plan          - Technical implementation plan")
+        print("  tasks         - Task breakdown")
+        print("  analyze       - Cross-artifact consistency check")
+        print("\nExample:")
+        print("  coagula --chain constitution specify plan tasks \\")
+        print("    -d 'Build a photo app...' -o 'Create a photo app'")
+        sys.exit(0)
+
+    # Handle chain
+    chain_pipelines = opts.get("chain")
+    if chain_pipelines:
+        data_source = opts.get("data_source", "")
+        business_objective = opts.get("business_objective", "")
+        if not data_source or not business_objective:
+            print("Error: --data-source and --objective are required with --chain", file=sys.stderr)
+            sys.exit(1)
+
+        # Register SDD presets
+        from coagula.presets import register_sdd_presets
+        register_sdd_presets(bridge._registry, include=chain_pipelines)
+
+        results = bridge.chain(chain_pipelines, data_source, business_objective)
+        for i, (name, r) in enumerate(zip(chain_pipelines, results)):
+            print(f"\n=== Step {i+1}: {name} ===")
+            if r.success:
+                print(f"  Result: success")
+                if json_output:
+                    print(json.dumps(r.data.model_dump() if r.data else {}, indent=2))
+                else:
+                    _display_result(r.data.model_dump() if r.data else {}, json_output, show_details)
+            else:
+                print(f"  Result: FAILED")
+                print(f"  Error: {r.error}")
+        sys.exit(0 if all(r.success for r in results) else 1)
 
     data_source = opts.get("data_source", "")
     business_objective = opts.get("business_objective", "")
