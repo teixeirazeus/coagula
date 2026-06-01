@@ -1,0 +1,20 @@
+# PyPI publishing configuration
+#
+# 1. Create an API token at https://pypi.org/manage/account/token/
+# 2. Create ~/.pypirc with:
+#
+# [pypi]
+# username = __token__
+# password = pypi-***
+#
+# [testpypi]
+# username = __token__
+# password = pypi-***
+#
+# 3. Publish to TestPyPI first:
+#    python -m twine upload --repository testpypi dist/*
+#
+# 4. Verify: pip install --index-url https://test.pypi.org/simple/ coagula
+#
+# 5. Publish to real PyPI:
+#    python -m twine upload dist/*
