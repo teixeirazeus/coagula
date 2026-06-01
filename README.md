@@ -2,12 +2,12 @@
 
 ![Coagula Logo](docs/logo.png)
 
-**Deterministic pipeline abstraction for AI agents.**  Turn SOPs into
-strictly typed, validated pipelines.  CLI + Python API.
-
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](#)
 [![Tests](https://img.shields.io/badge/tests-65%20passing-green.svg)](#)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](#)
+
+**Deterministic pipeline abstraction for AI agents.**  Turn SOPs into
+strictly typed, validated pipelines.  CLI + Python API.
 
 Coagula encapsulates standard operating procedures (SOPs) — "Speckits" —
 into deterministic micro-workers.  The orchestrator (Hermes, etc.) decides
