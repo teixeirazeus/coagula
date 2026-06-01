@@ -106,9 +106,10 @@ class TestSpeckitToolRegistry:
         """Registering a pipeline should make it retrievable."""
         reg = SpeckitToolRegistry()
         reg.register("my_pipeline")
-        schema, config = reg.get("my_pipeline")
+        schema, config, desc = reg.get("my_pipeline")
         assert schema["name"] == "execute_speckit_data_pipeline"
         assert isinstance(config, SpeckitConfig)
+        assert desc == ""  # default description
 
     def test_register_duplicate_raises(self) -> None:
         """Registering the same name twice should raise."""
@@ -159,6 +160,7 @@ class TestSpeckitToolRegistry:
         custom_config = SpeckitConfig(provider="gemini", model_id="gemini-2.0-flash")
         reg = SpeckitToolRegistry()
         reg.register("custom", schema=custom_schema, config=custom_config)
-        schema, config = reg.get("custom")
+        schema, config, desc = reg.get("custom")
         assert schema["name"] == "my_custom_tool"
         assert config.provider == "gemini"
+        assert desc == ""  # default description

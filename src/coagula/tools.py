@@ -116,18 +116,20 @@ def validate_tool_arguments(
 class SpeckitToolRegistry:
     """Registry for multiple named Speckit pipeline definitions.
 
-    Each entry maps a pipeline name to a ``(schema, config)`` pair, enabling
-    an orchestrator to invoke different SOPs through the same registry.
+    Each entry maps a pipeline name to a ``(schema, config, description)``
+    tuple, enabling an orchestrator to invoke different SOPs through
+    the same registry.
     """
 
     def __init__(self) -> None:
-        self._pipelines: dict[str, tuple[dict[str, Any], SpeckitConfig]] = {}
+        self._pipelines: dict[str, tuple[dict[str, Any], SpeckitConfig, str]] = {}
 
     def register(
         self,
         name: str,
         schema: dict[str, Any] | None = None,
         config: SpeckitConfig | None = None,
+        description: str = "",
     ) -> None:
         """Register a Speckit pipeline.
 
@@ -139,16 +141,23 @@ class SpeckitToolRegistry:
             Tool JSON schema.  Defaults to the built-in schema.
         config:
             Engine configuration.  Defaults to ``SpeckitConfig()``.
+        description:
+            Human-readable description of what this pipeline does.
         """
         if name in self._pipelines:
             raise ValueError(f"A pipeline named '{name}' is already registered")
         self._pipelines[name] = (
             schema or get_speckit_tool_schema(),
             config or SpeckitConfig(),
+            description,
         )
 
-    def get(self, name: str) -> tuple[dict[str, Any], SpeckitConfig]:
+    def get(self, name: str) -> tuple[dict[str, Any], SpeckitConfig, str]:
         """Retrieve a registered pipeline by name.
+
+        Returns
+        -------
+        A tuple of ``(schema, config, description)``.
 
         Raises
         ------
@@ -158,6 +167,23 @@ class SpeckitToolRegistry:
         if name not in self._pipelines:
             raise KeyError(f"No pipeline registered under '{name}'")
         return self._pipelines[name]
+
+    def describe(self, name: str) -> dict[str, Any]:
+        """Return a detailed description of a registered pipeline.
+
+        Returns
+        -------
+        A dict with keys: ``name``, ``description``, ``schema``, ``config``.
+        """
+        if name not in self._pipelines:
+            raise KeyError(f"No pipeline registered under '{name}'")
+        schema, config, desc = self._pipelines[name]
+        return {
+            "name": name,
+            "description": desc,
+            "schema": schema,
+            "config": config.model_dump(exclude={"response_model"}),
+        }
 
     def unregister(self, name: str) -> None:
         """Remove a registered pipeline.
@@ -173,7 +199,14 @@ class SpeckitToolRegistry:
 
     def list_schemas(self) -> list[dict[str, Any]]:
         """Return the JSON schemas for all registered pipelines."""
-        return [schema for schema, _ in self._pipelines.values()]
+        return [schema for schema, _, _ in self._pipelines.values()]
+
+    def list_descriptions(self) -> list[dict[str, Any]]:
+        """Return name + description for all registered pipelines."""
+        return [
+            {"name": name, "description": desc}
+            for name, (_, _, desc) in self._pipelines.items()
+        ]
 
     def __len__(self) -> int:
         return len(self._pipelines)
