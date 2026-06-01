@@ -1,5 +1,7 @@
 # Coagula
 
+![Coagula Logo](docs/logo.png)
+
 **Deterministic pipeline abstraction for AI agents.**  Turn SOPs into
 strictly typed, validated pipelines.  CLI + Python API.
 
